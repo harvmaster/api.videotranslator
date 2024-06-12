@@ -13,3 +13,5 @@ export const getUser = async (req: Request, res: Response) => {
 
   res.json(user);
 }
+
+export default getUser;
