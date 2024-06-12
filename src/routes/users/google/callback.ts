@@ -10,6 +10,7 @@ export const loginWithGoogleCallback = async (req: Request, res: Response) => {
   );
 
   const { code } = req.query;
+  // console.log(code)
 
   const { tokens } = await oauth2Client.getToken(code as string);
 
