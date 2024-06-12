@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { google } from "googleapis";
-import { google as googleConfig } from "../../../../config";
+
+import { google as googleConfig, frontend } from "../../../../config";
+
+import prisma from "../../../services/prisma";
+import generateAccessToken from "../../../auth/tokens/accessToken/genereateAccessToken";
 
 export const loginWithGoogleCallback = async (req: Request, res: Response) => {
   const oauth2Client = new google.auth.OAuth2(
@@ -23,7 +27,30 @@ export const loginWithGoogleCallback = async (req: Request, res: Response) => {
 
   const { data } = await oauth2.userinfo.get();
 
-  res.json(data);
+  if (!data.email) {
+    return res.status(401).json({ error: "Invalid email" });
+  }
+
+  let user = await prisma.user.findFirst({
+    where: {
+      email: data.email,
+    },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email: data.email,
+        googleId: data.id,
+      },
+    });
+  }
+
+  const accessToken = generateAccessToken(user.id);
+
+  res.redirect(frontend.url + "/login?accessToken=" + accessToken);
 }
+
+
 
 export default loginWithGoogleCallback

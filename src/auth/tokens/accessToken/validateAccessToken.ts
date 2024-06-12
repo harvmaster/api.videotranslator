@@ -10,6 +10,8 @@ export const validateAccessToken = (req: Request, res: Response, next: NextFunct
 
   if (!token) return res.status(401).json({ error: 'Access token is required' });
 
+  if (!jwt_secret) throw new Error('JWT secret is not defined')
+
   jwt.verify(token, jwt_secret, (err, user) => {
     if (err) return res.status(400).json({ error: 'Invalid token' });
     // @ts-ignore
