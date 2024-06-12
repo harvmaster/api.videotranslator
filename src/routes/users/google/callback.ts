@@ -48,7 +48,7 @@ export const loginWithGoogleCallback = async (req: Request, res: Response) => {
 
   const accessToken = generateAccessToken(user.id);
 
-  res.redirect(frontend.url + "/login?accessToken=" + accessToken);
+  res.redirect(frontend.url + "/callback?access_token=" + accessToken);
 }
 
 
